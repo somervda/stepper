@@ -4,9 +4,13 @@ import time
 import sys
 from rotary_irq import RotaryIRQ
 from machine import Pin, PWM
-dir = Pin(17, Pin.OUT)
-ena = Pin(16, Pin.OUT)
-pwm = PWM(Pin(0))  # GP0
+ena = Pin(20, Pin.OUT)  # blue
+dir = Pin(19, Pin.OUT)  # Yellow
+pwm = PWM(Pin(18))  # green
+# Break out of main loop when this pin is grounded
+isBreakPin = Pin(0, Pin.IN, Pin.PULL_UP)
+# Reset motor to speed = 0 when this pin is grounded
+isResetPin = Pin(14, Pin.IN, Pin.PULL_UP)
 dir.value(0)
 ena.value(1)  # Low signal activates ENA
 pwm.freq(100)  # 100Hz
@@ -14,8 +18,8 @@ pwm.duty_u16(32768)  # duty 50% (65535/2)
 # pwm.duty_u16(1000)
 
 
-r = RotaryIRQ(pin_num_clk=15,
-              pin_num_dt=14,
+r = RotaryIRQ(pin_num_clk=13,
+              pin_num_dt=12,
               min_val=-100,
               max_val=100,
               reverse=True,
@@ -26,6 +30,11 @@ val_old = r.value()
 print("Starting...")
 while True:
     val_new = r.value()
+    if isBreakPin.value() == 0:
+        break
+    if isResetPin.value() == 0:
+        r.reset()
+        val_new = 0
 
     if val_old != val_new:
         val_old = val_new

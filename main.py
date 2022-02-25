@@ -8,7 +8,7 @@ from machine import Pin, PWM, I2C
 from ssd1306 import SSD1306_I2C
 from writer import Writer
 
-STEPS_PER_REVOLUTION = 1600  # Set on stepper motor driver
+STEPS_PER_REVOLUTION = 800  # Set on stepper motor driver
 STEPPER_GEARING = 14  # 14:1 gearing on stepper motor
 LEAD_SCREW_TPI = 17  # 17 threads per inch
 # Font file converted to a bitmap (for ascii 32-57) 35 pixel height works well for this display
@@ -73,10 +73,10 @@ while True:
             old_displayModePin = displayModePin.value()
         val_old = val_new
         print('result =', val_new)
-        # Set the PWM frequency - I want to support max (Un-geared) of 360RPM or 6RPS
-        # The TB6600 is set to STEPS_PER_REVOLUTION (1600) steps per revolution (Using microstepping)
-        #  so max frequency needs to be STEPS_PER_REVOLUTION * 6 = 9600Hz
-        # Max value from encoder is 100 so need to multiple by 96 to get the 9600Hz max speed
+        # Set the PWM frequency - I want to support max (Un-geared) of 720RPM or 12RPS
+        # The TB6600 is set to STEPS_PER_REVOLUTION (800) steps per revolution (Using microstepping)
+        #  so max frequency needs to be STEPS_PER_REVOLUTION * 12 = 9600Hz
+        # Max value from encoder is 100 so need to multiple by 96 to get the 9600Hz for max speed
         pulseRatio = 96
         if(abs(val_new) > 0):
             pwm.freq(abs(val_new * pulseRatio))
